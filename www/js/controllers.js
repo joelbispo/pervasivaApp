@@ -7,7 +7,7 @@ angular.module('app.controllers', [])
 	    $scope.resultado = result;
 	})
 	.error(function(result){
-	    alert('Deu ruim ' +result);
+	    alert('Erro na requisição ' +result);
 	});
 
 })
