@@ -10,6 +10,17 @@ angular.module('app.controllers', [])
 	    alert('Erro na requisição ' +result);
 	});
 
+	$scope.doRefresh = function() {
+	    $http.get("https://trabalhopervasiva.herokuapp.com/mensagem/api/get")
+	     .success(function(result) {
+	       $scope.resultado = result;
+	    })
+	     .finally(function() {
+	       // Stop the ion-refresher from spinning
+	       $scope.$broadcast('scroll.refreshComplete');
+	    });
+	};
+
 })
    
 .controller('perfilCtrl', function($scope) {

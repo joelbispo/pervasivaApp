@@ -1,5 +1,7 @@
 <ion-view title="Inicial" id="page1" class=" " ng-controller="inicialCtrl">
     <ion-content padding="true" class="has-header">
+        <ion-refresher pulling-text="Puxe para atualizar..." on-refresh="doRefresh()">
+        </ion-refresher>
         <form id="inicial-form7" class="list ">
             <div id="inicial-button-bar1" class=" button-bar "></div>
         </form>
