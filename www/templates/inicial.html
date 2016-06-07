@@ -1,4 +1,4 @@
-<ion-view title="Inicial" id="page1" class=" ">
+<ion-view title="Inicial" id="page1" class=" " ng-controller="inicialCtrl">
     <ion-content padding="true" class="has-header">
         <form id="inicial-form7" class="list ">
             <div id="inicial-button-bar1" class=" button-bar "></div>
@@ -11,9 +11,12 @@
                 <p>4 informativos não lidos</p>
             </ion-item>
         </ion-list>
-        <h3 id="inicial-heading2" style="color:#000000;text-align:center;" class=" ">Atividade física regular reduz o risco de câncer</h3>
-        <div class="">
-            <img src="img/8HDRr9pQNCX2r9WwNFtg_corrida-exercicio-cancer-20110204-original.jpeg" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto;">
+        <br>
+        <div ng-repeat="mensagem in resultado track by $index">
+            <h3 id="inicial-heading2" style="color:#000000;text-align:center;" class=" ">{{mensagem.titulo}}</h3>
+            <div class="">
+                <img src="http://demomarcospenha.host22.com/imagens/{{mensagem.imagem}}" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto;">
+            </div>
         </div>
         <div id="inicial-button-bar2" class=" button-bar "></div>
         <div class="item item-body " id="inicial-list-item-container1"></div>

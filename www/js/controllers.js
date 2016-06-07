@@ -1,6 +1,14 @@
 angular.module('app.controllers', [])
   
-.controller('inicialCtrl', function($scope) {
+.controller('inicialCtrl', function($scope, $http) {
+	
+	$http.get("https://trabalhopervasiva.herokuapp.com/mensagem/api/get")
+	  	.success(function(result){
+	    $scope.resultado = result;
+	})
+	.error(function(result){
+	    alert('Deu ruim ' +result);
+	});
 
 })
    
