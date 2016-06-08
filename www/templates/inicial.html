@@ -13,14 +13,14 @@
                 <p>4 informativos não lidos</p>
             </ion-item>
         </ion-list>
-        <div class="list card" ng-repeat="mensagem in resultado track by $index">
+        <div class="list card" >
 
             <div class="item">
-                <h2>{{mensagem.titulo}}</h2>
-                <p>{{mensagem.conteudo}}</p>
+                <h2>{{ resultado.titulo }}</h2>
+                <p>{{ resultado.conteudo }}</p>
             </div>
             <div class="item item-image">
-                <img src="http://demomarcospenha.host22.com/imagens/{{mensagem.imagem}}">
+                <img src="http://demomarcospenha.host22.com/imagens/{{ resultado.imagem }}">
             </div>
 
         </div>
@@ -30,7 +30,5 @@
                 <img src="http://demomarcospenha.host22.com/imagens/{{mensagem.imagem}}" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto;">
             </div>
         </div> -->
-        <div id="inicial-button-bar2" class=" button-bar "></div>
-        <div class="item item-body " id="inicial-list-item-container1"></div>
     </ion-content>
 </ion-view>

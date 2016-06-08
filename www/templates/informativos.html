@@ -1,25 +1,12 @@
-<ion-view title="Informativos" id="page2" class=" ">
+<ion-view title="Informativos" id="page2" class=" " ng-controller="informativosCtrl">
     <ion-content padding="true" class="has-header">
-        <ion-list id="informativos-list4" class=" ">
+        <ion-refresher pulling-text="Puxe para atualizar..." on-refresh="doRefresh()">
+        </ion-refresher>
+        <ion-list id="informativos-list4" class=" " ng-repeat="mensagem in resultado track by $index">
             <ion-item class="item-thumbnail-left  " id="informativos-list-item8">
-                <img src="img/nUNf7P8nRgeB9DS8nsWM_corrida-exercicio-cancer-20110204-original.jpeg">
-                <h2>Atividade física</h2>
-                <p>reduz o risco de câncer</p>
-            </ion-item>
-            <ion-item class="item-thumbnail-left  " id="informativos-list-item11">
-                <img src="img/lz6wLLCPTHKfNhLgQDxJ_vacina.jpg">
-                <h2>Dia D - Vacinação</h2>
-                <p>Traga seu cartão</p>
-            </ion-item>
-            <ion-item class="item-thumbnail-left  " id="informativos-list-item9">
-                <img src="img/wQJbbFMnQKuhNld3Spdg_zika.jpg">
-                <h2>Proteja contra Zika</h2>
-                <p>Veja, nossas dicas</p>
-            </ion-item>
-            <ion-item class="item-thumbnail-left  " id="informativos-list-item10">
-                <img src="img/tdgjmFRKQnSa7JmAqkI0_auto-medicação.jpg">
-                <h2>Auto Medicação</h2>
-                <p>Confira os riscos</p>
+                <img src="http://demomarcospenha.host22.com/imagens/{{mensagem.imagem}}">
+                <h2>{{ mensagem.titulo }}</h2>
+                <p>{{ mensagem.conteudo }}</p>
             </ion-item>
         </ion-list>
     </ion-content>

@@ -4,7 +4,8 @@ angular.module('app.controllers', [])
 	
 	$http.get("https://trabalhopervasiva.herokuapp.com/mensagem/api/get")
 	  	.success(function(result){
-	    $scope.resultado = result;
+	    $scope.resultado = result[result.length - 1];
+	    console.log($scope.resultado);
 	})
 	.error(function(result){
 	    alert('Erro na requisição ' +result);
@@ -27,7 +28,26 @@ angular.module('app.controllers', [])
 
 })
    
-.controller('informativosCtrl', function($scope) {
+.controller('informativosCtrl', function($scope, $http) {
+
+	$http.get("https://trabalhopervasiva.herokuapp.com/mensagem/api/get")
+		.success(function(result){
+	$scope.resultado = result;
+	})
+	.error(function(result){
+	    alert('Erro na requisição ' +result);
+	});
+
+	$scope.doRefresh = function() {
+	    $http.get("https://trabalhopervasiva.herokuapp.com/mensagem/api/get")
+	     .success(function(result) {
+	       $scope.resultado = result;
+	    })
+	     .finally(function() {
+	       // Stop the ion-refresher from spinning
+	       $scope.$broadcast('scroll.refreshComplete');
+	    });
+	};
 
 })
    
