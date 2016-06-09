@@ -1,11 +1,10 @@
-angular.module('app.controllers', [])
+angular.module('app.controllers', ['ngCordova'])
   
 .controller('inicialCtrl', function($scope, $http) {
 	
 	$http.get("https://trabalhopervasiva.herokuapp.com/mensagem/api/get")
 	  	.success(function(result){
 	    $scope.resultado = result[result.length - 1];
-	    console.log($scope.resultado);
 	})
 	.error(function(result){
 	    alert('Erro na requisição ' +result);
@@ -63,7 +62,30 @@ angular.module('app.controllers', [])
 
 })
    
-.controller('loginCtrl', function($scope) {
+.controller('loginCtrl', function($scope, $state, $http, $cordovaSQLite) {
+
+
+	$scope.login = function(){
+		if($scope.cpf!=null){
+			var info = {cpf: $scope.cpf};
+		    $scope.cpf = '';
+
+		   	var link = 'https://trabalhopervasiva.herokuapp.com/api/login.php';
+
+	        $http.post(link, info).then(function (res){
+	            if(res.data=="null"){
+	            	alert("Seu CPF não foi encontrado! Por favor, contate o Administrador");
+	            }else{
+	            	$scope.resultado = res;
+	           		console.log(res.data.nome);
+	            	$state.go('menu.inicial');
+	            }
+	        });
+		}else{
+			alert("Insira seu CPF!");
+		}
+		
+	};
 
 })
  
