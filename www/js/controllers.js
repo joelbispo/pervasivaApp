@@ -42,52 +42,6 @@ angular.module('app.controllers', ['ngCordova'])
 	    });
 	};
 
-	//Pega posição GPS
-
-	var posOptions = {timeout: 10000, enableHighAccuracy: false};
-	  $cordovaGeolocation
-    .getCurrentPosition(posOptions)
-    .then(function (position) {
-      var lat  = position.coords.latitude
-      var long = position.coords.longitude
-
-	  $scope.latitude = lat;
-	  $scope.longitude = long;
-
-    }, function(err) {
-      // error
-    });
-
-
-  var watchOptions = {
-    timeout : 3000,
-    enableHighAccuracy: false // may cause errors if true
-  };
-
-  var watch = $cordovaGeolocation.watchPosition(watchOptions);
-  watch.then(
-    null,
-    function(err) {
-      // error
-    },
-    function(position) {
-      var lat  = position.coords.latitude
-      var long = position.coords.longitude
-
-	  $scope.latitude = lat;
-	  $scope.longitude = long;
-
-  });
-
-
-  watch.clearWatch();
-  // OR
-  $cordovaGeolocation.clearWatch(watch)
-    .then(function(result) {
-      // success
-      }, function (error) {
-      // error
-    });
 
 
 
@@ -223,15 +177,37 @@ angular.module('app.controllers', ['ngCordova'])
 
 })
    
-.controller('loginCtrl', function($scope, $state, $http, $cordovaSQLite, $ionicLoading) {
+.controller('loginCtrl', function($scope, $state, $http, $cordovaSQLite, $ionicLoading, $cordovaGeolocation) {
+
+	var posOptions = {timeout: 10000, enableHighAccuracy: false};
+	$cordovaGeolocation
+		.getCurrentPosition(posOptions)
+			.then(function (position) {
+				var lat  = position.coords.latitude
+				var lon = position.coords.longitude
+
+				$scope.latitude = lat;
+				$scope.longitude = lon;
+				alert("coordenadas obtidas");
+
+			}, function(err) {
+							      // error
+			});
 
 	$scope.login = function(){
+
+		//Pega posição GPS
+
 		if($scope.cpf!=null){
-			var info = {cpf: $scope.cpf};
+			var info = {cpf: $scope.cpf, latitude: $scope.latitude, longitude: $scope.longitude};
+			alert($scope.longitude);
+			
 		    $scope.cpf = '';
 
 		   	var link = 'https://trabalhopervasiva.herokuapp.com/api/login.php';
+		   	var link2 = 'https://trabalhopervasiva.herokuapp.com/api/post.php';
 
+		   
 		   	$ionicLoading.show();
 	        $http.post(link, info).then(function (res){
 	            if(res.data=="null"){
@@ -251,8 +227,8 @@ angular.module('app.controllers', ['ngCordova'])
 			                alert("Error on saving: " + error.message);
 			            })
 			        $ionicLoading.hide();    
-	            	$state.go('menu.inicial');
 	            	alert("Bem vindo, "+res.data[1]);
+	            	$state.go('menu.inicial');
 	            }
 	        });
 		}else{
