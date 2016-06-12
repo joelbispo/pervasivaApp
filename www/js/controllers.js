@@ -1,6 +1,6 @@
 angular.module('app.controllers', ['ngCordova'])
   
-.controller('inicialCtrl', function($scope, $http, $cordovaSQLite) {
+.controller('inicialCtrl', function($scope, $http, $cordovaSQLite, $cordovaGeolocation) {
 	
 	$http.get("https://trabalhopervasiva.herokuapp.com/mensagem/api/get")
 	  	.success(function(result){
@@ -41,6 +41,61 @@ angular.module('app.controllers', ['ngCordova'])
 	       $scope.$broadcast('scroll.refreshComplete');
 	    });
 	};
+
+	//Pega posição GPS
+
+	var posOptions = {timeout: 10000, enableHighAccuracy: false};
+	  $cordovaGeolocation
+    .getCurrentPosition(posOptions)
+    .then(function (position) {
+      var lat  = position.coords.latitude
+      var long = position.coords.longitude
+
+	  $scope.latitude = lat;
+	  $scope.longitude = long;
+
+    }, function(err) {
+      // error
+    });
+
+
+  var watchOptions = {
+    timeout : 3000,
+    enableHighAccuracy: false // may cause errors if true
+  };
+
+  var watch = $cordovaGeolocation.watchPosition(watchOptions);
+  watch.then(
+    null,
+    function(err) {
+      // error
+    },
+    function(position) {
+      var lat  = position.coords.latitude
+      var long = position.coords.longitude
+
+	  $scope.latitude = lat;
+	  $scope.longitude = long;
+
+  });
+
+
+  watch.clearWatch();
+  // OR
+  $cordovaGeolocation.clearWatch(watch)
+    .then(function(result) {
+      // success
+      }, function (error) {
+      // error
+    });
+
+
+
+
+
+
+
+
 
 })
    
@@ -207,4 +262,44 @@ angular.module('app.controllers', ['ngCordova'])
 	};
 
 })
+
+.controller('GeoCtrl', function($cordovaGeolocation) {
+
+  var posOptions = {timeout: 10000, enableHighAccuracy: false};
+  $cordovaGeolocation
+    .getCurrentPosition(posOptions)
+    .then(function (position) {
+      var lat  = position.coords.latitude
+      var long = position.coords.longitude
+    }, function(err) {
+      // error
+    });
+
+
+  var watchOptions = {
+    timeout : 3000,
+    enableHighAccuracy: false // may cause errors if true
+  };
+
+  var watch = $cordovaGeolocation.watchPosition(watchOptions);
+  watch.then(
+    null,
+    function(err) {
+      // error
+    },
+    function(position) {
+      var lat  = position.coords.latitude
+      var long = position.coords.longitude
+  });
+
+
+  watch.clearWatch();
+  // OR
+  $cordovaGeolocation.clearWatch(watch)
+    .then(function(result) {
+      // success
+      }, function (error) {
+      // error
+    });
+});
  
