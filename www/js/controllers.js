@@ -1,6 +1,6 @@
 angular.module('app.controllers', ['ngCordova'])
   
-.controller('inicialCtrl', function($scope, $http) {
+.controller('inicialCtrl', function($scope, $http, $cordovaSQLite) {
 	
 	$http.get("https://trabalhopervasiva.herokuapp.com/mensagem/api/get")
 	  	.success(function(result){
@@ -10,6 +10,27 @@ angular.module('app.controllers', ['ngCordova'])
 	    alert('Erro na requisição ' +result);
 	});
 
+	// Execute SELECT statement to load message from database.
+    $cordovaSQLite.execute(db, 'SELECT * FROM paciente')
+        .then(
+            function(res) {
+
+                if (res.rows.length > 0) {
+
+                    $scope.nome = res.rows.item(0).nome;
+                    $scope.cpf = res.rows.item(0).cpf;
+                    $scope.doenca = res.rows.item(0).doenca;
+                    $scope.tratamento = res.rows.item(0).tratamento;
+                    $scope.nascimento = res.rows.item(0).nascimento;
+
+                    
+                }
+            },
+            function(error) {
+                alert("Error on loading: " + error.message);
+            }
+        );
+
 	$scope.doRefresh = function() {
 	    $http.get("https://trabalhopervasiva.herokuapp.com/mensagem/api/get")
 	     .success(function(result) {
@@ -23,20 +44,103 @@ angular.module('app.controllers', ['ngCordova'])
 
 })
    
-.controller('perfilCtrl', function($scope) {
+.controller('perfilCtrl', function($scope, $cordovaSQLite) {
+
+    // Execute SELECT statement to load message from database.
+    $cordovaSQLite.execute(db, 'SELECT * FROM paciente')
+        .then(
+            function(res) {
+
+                if (res.rows.length > 0) {
+
+                    $scope.nome = res.rows.item(0).nome;
+                    $scope.cpf = res.rows.item(0).cpf;
+                    $scope.doenca = res.rows.item(0).doenca;
+                    $scope.tratamento = res.rows.item(0).tratamento;
+                    $scope.nascimento = res.rows.item(0).nascimento;
+
+                    
+                }
+            },
+            function(error) {
+                alert("Error on loading: " + error.message);
+            }
+        );
 
 })
    
-.controller('informativosCtrl', function($scope, $http) {
+.controller('informativosCtrl', function($scope, $http, $timeout, $cordovaFileTransfer, $cordovaSQLite, $ionicLoading) {
+	
+	$scope.listMensagem= [];
 
+	function SalvarMensagem(item, index) {
+    //console.log("index[" + index + "]: " + item.id);
+    $cordovaSQLite.execute(db, 'SELECT * FROM mensagens WHERE id = (?)', item.id)
+              .then(
+                  function(res) {
+                      if (res.rows.length > 0) {
+                      //mensagem já existe
+                      }else{
+                          //novo
+		                  $cordovaSQLite.execute(db, 'INSERT INTO mensagens (id, titulo, conteudo, imagem) VALUES (?,?,?,?)', [item.id, item.titulo, item.conteudo, item.imagem])
+		                    .then(function(result) {
+		                        //alert("Message saved successful, cheers! id: "+item.id);
+		                    }, function(error) {
+		                       // alert("Error on saving: " + error.message);
+		                    })    
+                      } 
+                  },
+                  function(error) {
+                      //alert("Error on loading: " + error.message);
+                  }
+              );      
+
+  	}  
+
+  	$ionicLoading.show();
 	$http.get("https://trabalhopervasiva.herokuapp.com/mensagem/api/get")
 		.success(function(result){
-	$scope.resultado = result;
-	})
-	.error(function(result){
-	    alert('Erro na requisição ' +result);
-	});
+			$scope.resultado = result;
+			result.forEach(SalvarMensagem);
+			$ionicLoading.hide();
+			// Execute SELECT statement to load message from database.
+				$cordovaSQLite.execute(db, 'SELECT * FROM mensagens')
+					        .then(
+					            function(res) {
 
+					                if (res.rows.length > 0) {
+					                  for (var i=0; i<res.rows.length; i++) {
+					                     //console.log("Product ID: " + res.rows.item(i).productID + " Product Name : " + res.rows.item(i).productName);
+					                     $scope.listMensagem.push(res.rows.item(i));
+					                  }
+					               }
+					            },
+					            function(error) {
+					                alert("Error on loading: " + error.message);
+					            }
+					        );     
+			//$scope.listMensagem.push(result);
+		})
+		.error(function(result){
+		    alert('Erro na requisição ' +result);
+		    // Execute SELECT statement to load message from database.
+				$cordovaSQLite.execute(db, 'SELECT * FROM mensagens')
+					        .then(
+					            function(res) {
+
+					                if (res.rows.length > 0) {
+					                  for (var i=0; i<res.rows.length; i++) {
+					                     //console.log("Product ID: " + res.rows.item(i).productID + " Product Name : " + res.rows.item(i).productName);
+					                     $scope.listMensagem.push(res.rows.item(i));
+					                  }
+					               }
+					            },
+					            function(error) {
+					                alert("Error on loading: " + error.message);
+					            }
+					        );   
+		});
+	    
 	$scope.doRefresh = function() {
 	    $http.get("https://trabalhopervasiva.herokuapp.com/mensagem/api/get")
 	     .success(function(result) {
@@ -47,6 +151,8 @@ angular.module('app.controllers', ['ngCordova'])
 	       $scope.$broadcast('scroll.refreshComplete');
 	    });
 	};
+
+
 
 })
    
@@ -62,8 +168,7 @@ angular.module('app.controllers', ['ngCordova'])
 
 })
    
-.controller('loginCtrl', function($scope, $state, $http, $cordovaSQLite) {
-
+.controller('loginCtrl', function($scope, $state, $http, $cordovaSQLite, $ionicLoading) {
 
 	$scope.login = function(){
 		if($scope.cpf!=null){
@@ -72,13 +177,27 @@ angular.module('app.controllers', ['ngCordova'])
 
 		   	var link = 'https://trabalhopervasiva.herokuapp.com/api/login.php';
 
+		   	$ionicLoading.show();
 	        $http.post(link, info).then(function (res){
 	            if(res.data=="null"){
+	            	$ionicLoading.hide();
 	            	alert("Seu CPF não foi encontrado! Por favor, contate o Administrador");
 	            }else{
 	            	$scope.resultado = res;
-	           		console.log(res.data.nome);
+	            	$scope.nome = res.data[1];
+	           		console.log(res.data[0]+" "+res.data[1] + " "+res.data[2]+ " "+res.data[3]+ " "+res.data[4]+ " "+res.data[5] );
+	            	
+	           		// execute INSERT statement with parameter
+			        $cordovaSQLite.execute(db, 'INSERT INTO paciente (id,nome,cpf,doenca,tratamento,nascimento) VALUES (?,?,?,?,?,?)', [res.data[0],res.data[1],res.data[2],res.data[3],res.data[4],res.data[5]])
+			            .then(function(result) {
+			                $scope.statusMessage = "Message saved successful, cheers!";
+			            }, function(error) {
+			                $scope.statusMessage = "Error on saving: " + error.message;
+			                alert("Error on saving: " + error.message);
+			            })
+			        $ionicLoading.hide();    
 	            	$state.go('menu.inicial');
+	            	alert("Bem vindo, "+res.data[1]);
 	            }
 	        });
 		}else{

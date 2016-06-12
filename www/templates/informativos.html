@@ -2,7 +2,7 @@
     <ion-content padding="true" class="has-header">
         <ion-refresher pulling-text="Puxe para atualizar..." on-refresh="doRefresh()">
         </ion-refresher>
-        <ion-list id="informativos-list4" class=" " ng-repeat="mensagem in resultado track by $index">
+        <ion-list id="informativos-list4" class=" " ng-repeat="mensagem in listMensagem track by $index">
             <ion-item class="item-thumbnail-left  " id="informativos-list-item8">
                 <img src="http://demomarcospenha.host22.com/imagens/{{mensagem.imagem}}">
                 <h2>{{ mensagem.titulo }}</h2>
