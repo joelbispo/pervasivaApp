@@ -2,6 +2,8 @@ angular.module('app.controllers', ['ngCordova'])
   
 .controller('inicialCtrl', function($scope, $http, $cordovaSQLite, $cordovaGeolocation) {
 	
+
+
 	$http.get("https://trabalhopervasiva.herokuapp.com/mensagem/api/get")
 	  	.success(function(result){
 	    $scope.resultado = result[result.length - 1];
@@ -17,13 +19,35 @@ angular.module('app.controllers', ['ngCordova'])
 
                 if (res.rows.length > 0) {
 
+                	var posOptions = {timeout: 10000, enableHighAccuracy: false};
+					$cordovaGeolocation
+					    .getCurrentPosition(posOptions)
+					    .then(function (position) {
+					      var lat  = position.coords.latitude
+					      var lon = position.coords.longitude
+					      $scope.latitude = lat;
+					      $scope.longitude = lon;
+					      //alert(lat+" "+lon+" "+res.rows.item(0).cpf);
+
+					      var item = {cpf: res.rows.item(0).cpf, latitude: lat, longitude: lon};
+					      var link = 'https://trabalhopervasiva.herokuapp.com/api/post.php';
+
+					      $http.post(link, item).then(function (res){
+				              //alert(res.data);
+				          });
+
+					    }, function(err) {
+					      // error
+					    });
+
                     $scope.nome = res.rows.item(0).nome;
                     $scope.cpf = res.rows.item(0).cpf;
                     $scope.doenca = res.rows.item(0).doenca;
                     $scope.tratamento = res.rows.item(0).tratamento;
                     $scope.nascimento = res.rows.item(0).nascimento;
+                    $scope.latitude = res.rows.item(0).latitude;
+                    $scope.longitude = res.rows.item(0).longitude;
 
-                    
                 }
             },
             function(error) {
@@ -42,14 +66,26 @@ angular.module('app.controllers', ['ngCordova'])
 	    });
 	};
 
+	  var watchOptions = {
+	    timeout : 3000,
+	    enableHighAccuracy: false // may cause errors if true
+	  };
+
+	    var watch = $cordovaGeolocation.watchPosition(watchOptions);
+  watch.then(
+    null,
+    function(err) {
+      // error
+    },
+    function(position) {
+      var lat  = position.coords.latitude
+      var long = position.coords.longitude
+      $scope.latitude = lat;
+	  $scope.longitude = long;
+  });
 
 
-
-
-
-
-
-
+  watch.clearWatch();
 
 })
    
@@ -179,35 +215,14 @@ angular.module('app.controllers', ['ngCordova'])
    
 .controller('loginCtrl', function($scope, $state, $http, $cordovaSQLite, $ionicLoading, $cordovaGeolocation) {
 
-	var posOptions = {timeout: 10000, enableHighAccuracy: false};
-	$cordovaGeolocation
-		.getCurrentPosition(posOptions)
-			.then(function (position) {
-				var lat  = position.coords.latitude
-				var lon = position.coords.longitude
-
-				$scope.latitude = lat;
-				$scope.longitude = lon;
-				alert("coordenadas obtidas");
-
-			}, function(err) {
-							      // error
-			});
-
 	$scope.login = function(){
 
-		//Pega posição GPS
-
 		if($scope.cpf!=null){
-			var info = {cpf: $scope.cpf, latitude: $scope.latitude, longitude: $scope.longitude};
-			alert($scope.longitude);
-			
+			var info = {cpf: $scope.cpf};
 		    $scope.cpf = '';
 
 		   	var link = 'https://trabalhopervasiva.herokuapp.com/api/login.php';
-		   	var link2 = 'https://trabalhopervasiva.herokuapp.com/api/post.php';
 
-		   
 		   	$ionicLoading.show();
 	        $http.post(link, info).then(function (res){
 	            if(res.data=="null"){
@@ -228,6 +243,7 @@ angular.module('app.controllers', ['ngCordova'])
 			            })
 			        $ionicLoading.hide();    
 	            	alert("Bem vindo, "+res.data[1]);
+	       
 	            	$state.go('menu.inicial');
 	            }
 	        });

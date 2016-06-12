@@ -47,7 +47,7 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
                     //alert("segundo uso");
                      $state.go('menu.inicial');
                   }if (res.rows.length == 0) {
-                    alert("primeiro uso");
+                    //alert("primeiro uso");
                     $state.go('login');
                   }
               },
