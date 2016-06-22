@@ -9,7 +9,7 @@
 // Database instance.
 var db;
 
-angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services', 'app.directives', 'ngCordova'])
+var app = angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services', 'app.directives', 'ngCordova'])
 
 .run(function($ionicPlatform, $cordovaSQLite, $state, $http, $timeout, $cordovaFileTransfer) {
   $ionicPlatform.ready(function() {
@@ -24,21 +24,20 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
       StatusBar.styleDefault();
     }
 
-    // Important!!
-    // 
-    // Instantiate database file/connection after ionic platform is ready.
-    //
+    //banco sqlite é criado
     try {
       db = $cordovaSQLite.openDB({name:"nextflow.db",location:'default'});
     } catch (error) {
       alert(error);
     }
     
-    $cordovaSQLite.execute(db, 'CREATE TABLE IF NOT EXISTS paciente (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, cpf TEXT, doenca TEXT, tratamento TEXT, nascimento TEXT)');
+    //tabelas de paciente e de mensagens sao criados, caso elas nao existam
+    $cordovaSQLite.execute(db, 'CREATE TABLE IF NOT EXISTS paciente (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, cpf TEXT, doenca TEXT, tratamento TEXT, nascimento TEXT, latitude TEXT, longitude TEXT)');
     $cordovaSQLite.execute(db, 'CREATE TABLE IF NOT EXISTS mensagens (id INTEGER PRIMARY KEY AUTOINCREMENT, titulo TEXT, conteudo TEXT, imagem TEXT)');
 
     var controle_login;
 
+    //controle de login de usuario
     $cordovaSQLite.execute(db, 'SELECT * FROM paciente')
           .then(
               function(res) {

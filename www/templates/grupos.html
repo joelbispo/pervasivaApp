@@ -1,6 +1,6 @@
-<ion-view title="Grupos" id="page3" class=" ">
+<ion-view title="Grupos" id="page3" class=" " ng-controller="gruposCtrl">
     <ion-content padding="true" class="has-header">
-        <div class="list card " id="grupos-card21">
+        <div class="list card " id="grupos-card21" >
             <ion-item class="item-thumbnail-left  " id="grupos-list-item20">
                 <h2>Workspace 1</h2>
             </ion-item>
@@ -11,6 +11,6 @@
                 <h2>Workspace 3</h2>
             </ion-item>
         </div>
-        <a ui-sref="menu.verificarUsuRioPrXimo" id="grupos-button1" class=" button button-positive  button-block ">Criar Workspace</a>
+        <a ng-click="redirecionar()" id="grupos-button1" class=" button button-positive  button-block ">Criar Workspace</a>
     </ion-content>
 </ion-view>

@@ -1,11 +1,10 @@
-<ion-view title="Verificar Usuário Próximo" id="page5" class=" ">
+<ion-view title="Verificar Usuário Próximo" id="page5" class=" " ng-controller="verificarUsuRioPrXimoCtrl">
     <ion-content padding="true" class="has-header">
-        <button id="verificarUsuRioPrXimo-button2" class=" button button-positive  button-block icon ion-android-search ">Verificar Usuários Próximos</button>
-        <ion-list id="verificarUsuRioPrXimo-list8" class=" ">
-            <ion-checkbox name="João">Bran</ion-checkbox>
-            <ion-checkbox>Arya</ion-checkbox>
-            <ion-checkbox>Little Finger</ion-checkbox>
+        <button class="button button-positive  button-block icon ion-android-search " ng-click="buscar_proximo()">Verificar Usuários Próximos</button>
+        <ion-list id="verificarUsuRioPrXimo-list8" class=" " ng-repeat="perfil in resultado | startFrom : 1">
+            <ion-checkbox value="{{perfil.id}}" name="{{perfil.nome}}" ng-model="checkItems[perfil.id]" ng-change="print()">	{{perfil.nome}}
+        	</ion-checkbox>
         </ion-list>
-        <a ui-sref="menu.workspace" id="verificarUsuRioPrXimo-button3" class=" button button-balanced  button-block icon ion-android-add-circle ">Criar Workspace</a>
+        <button class=" button button-balanced  button-block icon ion-android-add-circle " ng-click="save()">Criar Workspace</button>
     </ion-content>
 </ion-view>

@@ -1,24 +1,23 @@
 angular.module('app.controllers', ['ngCordova'])
-  
+
 .controller('inicialCtrl', function($scope, $http, $cordovaSQLite, $cordovaGeolocation) {
-	
-
-
+	//requisicao de mensagens
 	$http.get("https://trabalhopervasiva.herokuapp.com/mensagem/api/get")
 	  	.success(function(result){
 	    $scope.resultado = result[result.length - 1];
 	})
 	.error(function(result){
-	    alert('Erro na requisição ' +result);
+	    //alert('Erro na requisição ' +result);
 	});
 
-	// Execute SELECT statement to load message from database.
+	//busca na tabela de pacientes
     $cordovaSQLite.execute(db, 'SELECT * FROM paciente')
         .then(
             function(res) {
 
                 if (res.rows.length > 0) {
 
+                	//busca das coordenadas atuais do paciente
                 	var posOptions = {timeout: 10000, enableHighAccuracy: false};
 					$cordovaGeolocation
 					    .getCurrentPosition(posOptions)
@@ -28,10 +27,18 @@ angular.module('app.controllers', ['ngCordova'])
 					      $scope.latitude = lat;
 					      $scope.longitude = lon;
 					      //alert(lat+" "+lon+" "+res.rows.item(0).cpf);
+					   $cordovaSQLite.execute(db, 'UPDATE paciente SET latitude = ?, longitude = ? WHERE cpf = ?', [lat,lon,res.rows.item(0).cpf])
+			            .then(function(result) {
+			                alert("coordenadas salvas"+ lat+" "+lon);
+			            }, function(error) {
+			                $scope.statusMessage = "Error on saving: " + error.message;
+			                //alert("Error on saving: " + error.message);
+			            })
 
 					      var item = {cpf: res.rows.item(0).cpf, latitude: lat, longitude: lon};
 					      var link = 'https://trabalhopervasiva.herokuapp.com/api/post.php';
 
+					      //envio do post com as informacoes atuais do paciente
 					      $http.post(link, item).then(function (res){
 				              //alert(res.data);
 				          });
@@ -48,6 +55,10 @@ angular.module('app.controllers', ['ngCordova'])
                     $scope.latitude = res.rows.item(0).latitude;
                     $scope.longitude = res.rows.item(0).longitude;
 
+
+
+
+
                 }
             },
             function(error) {
@@ -55,6 +66,7 @@ angular.module('app.controllers', ['ngCordova'])
             }
         );
 
+	//faz o refresh nas mensagens
 	$scope.doRefresh = function() {
 	    $http.get("https://trabalhopervasiva.herokuapp.com/mensagem/api/get")
 	     .success(function(result) {
@@ -72,11 +84,11 @@ angular.module('app.controllers', ['ngCordova'])
 	  };
 
 	    var watch = $cordovaGeolocation.watchPosition(watchOptions);
-  watch.then(
-    null,
-    function(err) {
-      // error
-    },
+		  watch.then(
+		    null,
+		    function(err) {
+		      // error
+		    },
     function(position) {
       var lat  = position.coords.latitude
       var long = position.coords.longitude
@@ -157,6 +169,7 @@ angular.module('app.controllers', ['ngCordova'])
 					                  for (var i=0; i<res.rows.length; i++) {
 					                     //console.log("Product ID: " + res.rows.item(i).productID + " Product Name : " + res.rows.item(i).productName);
 					                     $scope.listMensagem.push(res.rows.item(i));
+					                     $ionicLoading.hide();
 					                  }
 					               }
 					            },
@@ -177,6 +190,7 @@ angular.module('app.controllers', ['ngCordova'])
 					                  for (var i=0; i<res.rows.length; i++) {
 					                     //console.log("Product ID: " + res.rows.item(i).productID + " Product Name : " + res.rows.item(i).productName);
 					                     $scope.listMensagem.push(res.rows.item(i));
+					                     $ionicLoading.hide();
 					                  }
 					               }
 					            },
@@ -201,11 +215,62 @@ angular.module('app.controllers', ['ngCordova'])
 
 })
    
-.controller('gruposCtrl', function($scope) {
-
+.controller('gruposCtrl', function($scope, $state) {
+	
+	$scope.redirecionar = function(){
+		$state.go('menu.verificarUsuRioPrXimo');
+	}
+	
 })
       
-.controller('verificarUsuRioPrXimoCtrl', function($scope) {
+.controller('verificarUsuRioPrXimoCtrl', function($scope, $http, $ionicLoading, $cordovaSQLite) {
+
+    $scope.buscar_proximo = function(){
+    	
+    	// Execute SELECT statement to load message from database.
+	    $cordovaSQLite.execute(db, 'SELECT * FROM paciente')
+	        .then(
+	            function(res) {
+
+	                if (res.rows.length > 0) {
+	                	
+	                   lat = res.rows.item(0).latitude;
+	                   lon = res.rows.item(0).longitude;
+
+	                   	var item = {latitude: res.rows.item(0).latitude, longitude: res.rows.item(0).longitude}; 	
+					   	var link = "http://trabalhopervasiva.herokuapp.com/api/proximo.php";
+
+					    $http.post(link, item).then(function (res){
+				          	$scope.resultado = res.data;
+				      	}); 
+					                   
+	                }
+	            },
+	            function(error) {
+	                alert("Error on loading: " + error.message);
+	            }
+	        );
+  
+
+    }    
+
+    $scope.save = function() {
+      var array = [];
+      for(i in $scope.checkItems) {
+          //console.log($scope.checkItems[i]);
+          if($scope.checkItems[i] == true) {
+              array.push(i);
+          }
+      }
+      //console.log(array);
+      array.push(identificador);
+
+      var link = 'https://trabalhopervasiva.herokuapp.com/api/workspace.php';
+
+      $http.post(link, array).then(function (res){
+          alert(res.data);
+      });
+  	}
 
 })
    
@@ -255,43 +320,3 @@ angular.module('app.controllers', ['ngCordova'])
 
 })
 
-.controller('GeoCtrl', function($cordovaGeolocation) {
-
-  var posOptions = {timeout: 10000, enableHighAccuracy: false};
-  $cordovaGeolocation
-    .getCurrentPosition(posOptions)
-    .then(function (position) {
-      var lat  = position.coords.latitude
-      var long = position.coords.longitude
-    }, function(err) {
-      // error
-    });
-
-
-  var watchOptions = {
-    timeout : 3000,
-    enableHighAccuracy: false // may cause errors if true
-  };
-
-  var watch = $cordovaGeolocation.watchPosition(watchOptions);
-  watch.then(
-    null,
-    function(err) {
-      // error
-    },
-    function(position) {
-      var lat  = position.coords.latitude
-      var long = position.coords.longitude
-  });
-
-
-  watch.clearWatch();
-  // OR
-  $cordovaGeolocation.clearWatch(watch)
-    .then(function(result) {
-      // success
-      }, function (error) {
-      // error
-    });
-});
- 
