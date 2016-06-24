@@ -29,7 +29,7 @@ angular.module('app.controllers', ['ngCordova'])
 					      //alert(lat+" "+lon+" "+res.rows.item(0).cpf);
 					   $cordovaSQLite.execute(db, 'UPDATE paciente SET latitude = ?, longitude = ? WHERE cpf = ?', [lat,lon,res.rows.item(0).cpf])
 			            .then(function(result) {
-			                alert("coordenadas salvas"+ lat+" "+lon);
+			                //alert("coordenadas salvas"+ lat+" "+lon);
 			            }, function(error) {
 			                $scope.statusMessage = "Error on saving: " + error.message;
 			                //alert("Error on saving: " + error.message);
@@ -226,8 +226,8 @@ angular.module('app.controllers', ['ngCordova'])
 .controller('verificarUsuRioPrXimoCtrl', function($scope, $http, $ionicLoading, $cordovaSQLite) {
 
     $scope.buscar_proximo = function(){
-    	
-    	// Execute SELECT statement to load message from database.
+ 
+     	// Execute SELECT statement to load message from database.
 	    $cordovaSQLite.execute(db, 'SELECT * FROM paciente')
 	        .then(
 	            function(res) {
@@ -243,7 +243,7 @@ angular.module('app.controllers', ['ngCordova'])
 					    $http.post(link, item).then(function (res){
 				          	$scope.resultado = res.data;
 				      	}); 
-					                   
+					           	        
 	                }
 	            },
 	            function(error) {
@@ -268,7 +268,7 @@ angular.module('app.controllers', ['ngCordova'])
       var link = 'https://trabalhopervasiva.herokuapp.com/api/workspace.php';
 
       $http.post(link, array).then(function (res){
-          alert(res.data);
+         // alert(res.data);
       });
   	}
 

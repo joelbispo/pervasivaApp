@@ -1,7 +1,7 @@
 <ion-view title="Verificar Usuário Próximo" id="page5" class=" " ng-controller="verificarUsuRioPrXimoCtrl">
     <ion-content padding="true" class="has-header">
         <button class="button button-positive  button-block icon ion-android-search " ng-click="buscar_proximo()">Verificar Usuários Próximos</button>
-        <ion-list id="verificarUsuRioPrXimo-list8" class=" " ng-repeat="perfil in resultado | startFrom : 1">
+        <ion-list id="verificarUsuRioPrXimo-list8" class=" " ng-repeat="perfil in resultado">
             <ion-checkbox value="{{perfil.id}}" name="{{perfil.nome}}" ng-model="checkItems[perfil.id]" ng-change="print()">	{{perfil.nome}}
         	</ion-checkbox>
         </ion-list>
